@@ -33,7 +33,7 @@ $(document).ready(function() {
 					
 					var polygon = new GPolygon(thepoints, colour, 5, 1, colour, 0.2, polyOptions);
 					gmap.addOverlay(polygon);
-					$('ul.legend-items').append('<li><div class="colour" style="background-color:' + colour + '"></div>' + name + '</li>');
+					$('ul.legend-items').append('<li><div class="colour" style="background-color:' + colour + '"></div><a href="?' + data.place.woeid + '">' + name + '</a></li>');
 					
 					$.each(thepoints, function(pindex, point) {
 						bounds.extend(point);
@@ -59,6 +59,10 @@ $(document).ready(function() {
 	if (window.location.hash) {
 		var hash = window.location.hash;
 		var woeid = parseInt(hash.slice(1,hash.length));
+		$('#neighbourhood-field').val('');
+  } else if (window.location.search) {
+		var search = window.location.search;
+		var woeid = parseInt(search.slice(1,search.length));
 		$('#neighbourhood-field').val('');
 	} else {
 		var woeid = 34709; // default to shoreditch, london
