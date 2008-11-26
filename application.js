@@ -16,7 +16,7 @@ $(document).ready(function() {
 	var bounds = new GLatLngBounds();
 	
 	var colours = ["red", "blue", "green", "purple", "orange", "yellow", "darkred", "darkblue", "darkgreen"];
-	
+
 	function displayPolygon(woeid) {
 		$.getJSON('http://api.flickr.com/services/rest/?method=flickr.places.getInfo&api_key=' + flickr_api_key + '&woe_id=' + woeid + '&format=json&jsoncallback=?', function(data) {
 			if(data.place.has_shapedata == 1) {
@@ -49,9 +49,9 @@ $(document).ready(function() {
 		});
 	}
 	
-	function displayNeighbours(woeid) {
-		$.getJSON('http://where.yahooapis.com/v1/place/' + woeid + '/neighbors?appid=' + yahoo_geoplanet_api_key + '&format=json&callback=?', function(data) {
-			neighbours = [];
+	function displayNeighbours(woeid, type) {
+		type = type || 'neighbors';
+		$.getJSON('http://where.yahooapis.com/v1/place/' + woeid + '/' + type + '?appid=' + yahoo_geoplanet_api_key + '&format=json&callback=?', function(data) {
 			$.each(data.places.place, function(index, place) {
 				displayPolygon(place.woeid, place.name);
 			});
@@ -92,6 +92,22 @@ $(document).ready(function() {
 			}
 		});
 		return false;
+	});
+
+	$('#type-search').change(function(){
+		console.log("type search");
+		var type = $(this).find('select option:selected').text();
+		console.log("got type "+type);
+		
+		if (type == "neighbours") {
+			type = "neighbors";
+		}
+
+		colours = ["red", "blue", "green", "purple", "orange", "yellow", "darkred", "darkblue", "darkgreen"];
+		gmap.clearOverlays();
+		$('ul.legend-items').empty();
+		displayNeighbours(woeid, type);
+
 	});
 	
 	// $.each(neighbours, function(i, n) {
