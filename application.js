@@ -24,7 +24,7 @@ $(document).ready(function() {
 				var colour = colours.shift();
 				var name = data.place.name.split(',')[0];
 
-				$('ul.legend-items').append('<li><div class="colour" style="background-color:' + colour + '"></div><a href="?' + data.place.woeid + '">' + name + '</a></li>');
+				$('ul.legend-items').append('<li><div class="colour" style="background-color:' + colour + '"></div><a href="#' + data.place.woeid + '">' + name + '</a></li>');
 
 				$.each(data.place.shapedata.polylines.polyline, function(index,polyline) {
 					thepoints = [];
@@ -47,12 +47,29 @@ $(document).ready(function() {
 				if(!bounds.isEmpty()) {
 					gmap.setCenter(bounds.getCenter(), gmap.getBoundsZoomLevel(bounds));
 				}
+
+				$('ul.legend-items li a').click(
+					function() {
+						var link = $(this).attr('href');
+						var new_woeid = parseInt(link.slice(1,link.length));						
+
+						// TODO this block is getting a bit repetitive. Refactor out
+						// "reset boundaries"?
+						colours = ["red", "blue", "green", "purple", "orange", "yellow", "darkred", "darkblue", "darkgreen"];
+						$('ul.legend-items').empty();
+						gmap.clearOverlays();
+						var type = $('#type-search select option:selected').text();
+						displayNeighbours(new_woeid, type);
+												
+						return false;
+				});
 			}
 		});
 	}
 	
 	function displayNeighbours(woeid, type) {
 		type = type || 'neighbors';
+		if (type == "neighbours") { type = "neighbors" };
 		$.getJSON('http://where.yahooapis.com/v1/place/' + woeid + '/' + type + '?appid=' + yahoo_geoplanet_api_key + '&format=json&callback=?', function(data) {
 			$.each(data.places.place, function(index, place) {
 				displayPolygon(place.woeid, place.name);
@@ -63,10 +80,6 @@ $(document).ready(function() {
 	if (window.location.hash) {
 		var hash = window.location.hash;
 		var woeid = parseInt(hash.slice(1,hash.length));
-		$('#neighbourhood-field').val('');
-  } else if (window.location.search) {
-		var search = window.location.search;
-		var woeid = parseInt(search.slice(1,search.length));
 		$('#neighbourhood-field').val('');
 	} else {
 		var woeid = 34709; // default to shoreditch, london
@@ -100,14 +113,8 @@ $(document).ready(function() {
 	});
 
 	$('#type-search').change(function(){
-		console.log("type search");
 		var type = $(this).find('select option:selected').text();
-		console.log("got type "+type);
 		
-		if (type == "neighbours") {
-			type = "neighbors";
-		}
-
 		colours = ["red", "blue", "green", "purple", "orange", "yellow", "darkred", "darkblue", "darkgreen"];
 		gmap.clearOverlays();
 		$('ul.legend-items').empty();
