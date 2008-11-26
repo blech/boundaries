@@ -21,6 +21,11 @@ $(document).ready(function() {
 		$.getJSON('http://api.flickr.com/services/rest/?method=flickr.places.getInfo&api_key=' + flickr_api_key + '&woe_id=' + woeid + '&format=json&jsoncallback=?', function(data) {
 			if(data.place.has_shapedata == 1) {
 			
+				var colour = colours.shift();
+				var name = data.place.name.split(',')[0];
+
+				$('ul.legend-items').append('<li><div class="colour" style="background-color:' + colour + '"></div><a href="?' + data.place.woeid + '">' + name + '</a></li>');
+
 				$.each(data.place.shapedata.polylines.polyline, function(index,polyline) {
 					thepoints = [];
 					$.each(polyline._content.split(/ /), function(pindex, point) {
@@ -30,12 +35,9 @@ $(document).ready(function() {
 					});
 					
 					var polyOptions = {geodesic:true};
-					var colour = colours.shift();
-					var name = data.place.name.split(',')[0];
 					
 					var polygon = new GPolygon(thepoints, colour, 5, 1, colour, 0.2, polyOptions);
 					gmap.addOverlay(polygon);
-					$('ul.legend-items').append('<li><div class="colour" style="background-color:' + colour + '"></div><a href="?' + data.place.woeid + '">' + name + '</a></li>');
 					
 					$.each(thepoints, function(pindex, point) {
 						bounds.extend(point);
