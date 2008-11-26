@@ -51,6 +51,9 @@ p {
 a {
   color: white; }
 
+select {
+  font-size: 0.8em; }
+
 form {
   display: inline; }
 
