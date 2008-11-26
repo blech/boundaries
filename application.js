@@ -8,6 +8,8 @@ $(document).ready(function() {
 	
 	var gmap = new GMap2(document.getElementById("map"));
 	gmap.addControl(new GSmallMapControl());
+	gmap.addMapType(G_PHYSICAL_MAP);
+	gmap.addControl(new GMenuMapTypeControl());
 	var startingPoint = new GLatLng(51.506325,-0.127144);
 	gmap.setCenter(startingPoint, 13);
 	
