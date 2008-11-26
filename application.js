@@ -16,6 +16,8 @@ $(document).ready(function() {
 	var bounds = new GLatLngBounds();
 	
 	var colours = ["red", "blue", "green", "purple", "orange", "yellow", "darkred", "darkblue", "darkgreen", "darkslategrey", "darkviolet"];
+	var woeid   = 34709;
+	var type    = "neighbors";
 
 	function displayPolygon(woeid) {
 		$.getJSON('http://api.flickr.com/services/rest/?method=flickr.places.getInfo&api_key=' + flickr_api_key + '&woe_id=' + woeid + '&format=json&jsoncallback=?', function(data) {
@@ -51,7 +53,7 @@ $(document).ready(function() {
 				$('ul.legend-items li a').click(
 					function() {
 						var link = $(this).attr('href');
-						var new_woeid = parseInt(link.slice(1,link.length));						
+						woeid = parseInt(link.slice(1,link.length));						
 
 						// TODO this block is getting a bit repetitive. Refactor out
 						// "reset boundaries"?
@@ -59,7 +61,7 @@ $(document).ready(function() {
 						$('ul.legend-items').empty();
 						gmap.clearOverlays();
 						var type = $('#type-search select option:selected').text();
-						displayNeighbours(new_woeid, type);
+						displayNeighbours(woeid, type);
 												
 						return false;
 				});
@@ -79,10 +81,8 @@ $(document).ready(function() {
 	
 	if (window.location.hash) {
 		var hash = window.location.hash;
-		var woeid = parseInt(hash.slice(1,hash.length));
+		woeid = parseInt(hash.slice(1,hash.length));
 		$('#neighbourhood-field').val('');
-	} else {
-		var woeid = 34709; // default to shoreditch, london
 	}
 
 	var type = $('#type-search select option:selected').text();
@@ -98,13 +98,13 @@ $(document).ready(function() {
 		
 		$.getJSON('http://where.yahooapis.com/v1/places.q(' + text + ')?appid=dE28hNrV34GDiruGoUMw0JqPSRFyCpnYZpdZSDwdGzN_Nis5gaZevZRJkfswvaxsqQ7w&format=json&callback=?', function(data) {
 			if (data.places.place[0]) {
-				var new_woeid = data.places.place[0].woeid;
-				window.location.hash = new_woeid;
+				woeid = data.places.place[0].woeid;
+				window.location.hash = woeid;
 				gmap.clearOverlays();
 				$('ul.legend-items').empty();
-				displayPolygon(new_woeid);
+				displayPolygon(woeid);
 				var type = $('#type-search select option:selected').text();
-				displayNeighbours(new_woeid, type);
+				displayNeighbours(woeid, type);
 			} else {
 				alert("Couldn't find that place");
 			}
