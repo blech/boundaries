@@ -69,9 +69,11 @@ $(document).ready(function() {
 	} else {
 		var woeid = 34709; // default to shoreditch, london
 	}
+
+	var type = $('#type-search select option:selected').text();
 		
 	displayPolygon(woeid);
-	displayNeighbours(woeid);
+	displayNeighbours(woeid, type);
 	
 	$('#neighbourhood-search').submit(function(){
 		// reset bounds
@@ -86,7 +88,8 @@ $(document).ready(function() {
 				gmap.clearOverlays();
 				$('ul.legend-items').empty();
 				displayPolygon(new_woeid);
-				displayNeighbours(new_woeid);
+				var type = $('#type-search select option:selected').text();
+				displayNeighbours(new_woeid, type);
 			} else {
 				alert("Couldn't find that place");
 			}
